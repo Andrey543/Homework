@@ -8,29 +8,74 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 
+import java.sql.Time;
 
 
 public class StartActivity extends AppCompatActivity {
+
+    private int time = 0;
+    private final int maxTime = 2;
+    static final String START_TIME = "time";
+    private MyCountDownTimer timer =null;
+    final StartActivity thisActivity = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start_activity);
+        if ( savedInstanceState != null){
+            time = savedInstanceState.getInt(START_TIME);
+            timer = new MyCountDownTimer((maxTime-time)*1000,1000);
+        }else{
+            timer = new MyCountDownTimer(maxTime*1000,1000);
+        }
+
+
     }
-    protected void onResume(){
-        super.onResume();
+    @Override
+    protected void onStart(){
+        super.onStart();
+        timer.start();
+    }
 
-        new CountDownTimer(2000, 1){
-            public void onTick(long millisUntilFinished) {
-            }
+    @Override
+    protected void onPause(){
+        super.onPause();
+    }
 
-            public void onFinish() {
 
-                    Intent intent = new Intent(StartActivity.this, CounterActivity.class);
-                    startActivity(intent);
-            }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt(START_TIME, time);
 
-        }.start();
+        if( timer != null ) {
+
+            timer.cancel();
+
+        }
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    private class MyCountDownTimer extends CountDownTimer {
+
+        private MyCountDownTimer(long millis, long countDownInterval) {
+            super(millis, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long l) {
+            time++;
+        }
+
+        @Override
+        public void onFinish() {
+            time = 0;
+            Intent intent = new Intent(thisActivity, CounterActivity.class);
+            startActivity(intent);
+            thisActivity.finish();
+        }
     }
 
 }
