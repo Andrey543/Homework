@@ -5,6 +5,8 @@ import android.os.CountDownTimer;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 
@@ -14,7 +16,7 @@ import java.sql.Time;
 public class StartActivity extends AppCompatActivity {
 
     private int time = 0;
-    private final int maxTime = 2;
+    private final int maxTime = 5;
     static final String START_TIME = "time";
     private MyCountDownTimer timer =null;
     final StartActivity thisActivity = this;
@@ -23,6 +25,10 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.start_activity);
         setContentView(R.layout.start_activity);
         if ( savedInstanceState != null){
             time = savedInstanceState.getInt(START_TIME);
@@ -42,6 +48,7 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
+        timer.cancel();
     }
 
 
@@ -56,6 +63,12 @@ public class StartActivity extends AppCompatActivity {
         }
 
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        savedInstanceState.getInt(START_TIME, time);
     }
 
     private class MyCountDownTimer extends CountDownTimer {
